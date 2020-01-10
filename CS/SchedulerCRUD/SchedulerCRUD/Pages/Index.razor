@@ -1,0 +1,50 @@
+﻿@page "/"
+@using SchedulerCRUD.Data
+@inject HttpClient Http
+
+<DxScheduler Id="schedulerWeekView"
+             StartDate="@(new DateTime(2016, 10, 10))"
+             DataStorage="@DataStorage" 
+             AppointmentUpdated="async (e) => await AppointmentUpdated(e)"
+             AppointmentInserting="(e) => AppointmentInserting(e)"
+             AppointmentInserted="async (e) => await AppointmentInserted(e)"
+             AppointmentRemoved="async (e) => await AppointmentRemoved(e)">
+    <DxSchedulerDayView ShowWorkTimeOnly="true"></DxSchedulerDayView>
+</DxScheduler>
+
+@code {
+        DxSchedulerDataStorage DataStorage = new DxSchedulerDataStorage() {
+            AppointmentsSource = null,
+            AppointmentMappings = new DxSchedulerAppointmentMappings() {
+                Id = "Id",
+                Type = "EventType",
+                Start = "StartTime",
+                End = "EndTime",
+                Subject = "Subject",
+                AllDay = "AllDay",
+                Location = "Location",
+                Description = "Description",
+                LabelId = "Label",
+                StatusId = "Status",
+                RecurrenceInfo = "RecurrenceInfo"
+            }
+        };
+    protected override async Task OnInitializedAsync() {
+        DataStorage.AppointmentsSource = await Http.GetJsonAsync<List<MedicalAppointments>>("https://localhost:44350/api/MedicalAppointments"); // https://localhost:44350 - link to the locally deployed DataSourceWebApi project
+    }
+    void AppointmentInserting(SchedulerAppointmentOperationEventArgs e) {
+        e.Appointment.Id = -1;
+    }
+    async Task AppointmentInserted (DxSchedulerAppointmentItem e) {
+        MedicalAppointments insertedItem = (DataStorage.AppointmentsSource as List<MedicalAppointments>).Where(m => m.Id == -1).FirstOrDefault();
+        insertedItem.Id = 0;
+        await Http.PostJsonAsync<MedicalAppointments>("https://localhost:44350/api/MedicalAppointments/", insertedItem);
+    }
+    async Task AppointmentUpdated (DxSchedulerAppointmentItem e) {
+        MedicalAppointments updatedItem = (DataStorage.AppointmentsSource as List<MedicalAppointments>).Where(m => m.Id == Convert.ToInt32(e.Id)).FirstOrDefault();
+        await Http.PutJsonAsync("https://localhost:44350/api/MedicalAppointments/" + Convert.ToInt32(e.Id), updatedItem);
+    }
+    async Task AppointmentRemoved (DxSchedulerAppointmentItem e) {
+        await Http.DeleteAsync("https://localhost:44350/api/MedicalAppointments/" + e.Id);
+    }
+}
