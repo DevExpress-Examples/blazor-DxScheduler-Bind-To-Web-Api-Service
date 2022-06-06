@@ -9,10 +9,10 @@
 <DxScheduler Id="schedulerWeekView"
              StartDate="@startDate"
              DataStorage="@DataStorage"
-             AppointmentUpdated="async (e) => await AppointmentUpdated(e)"
-             AppointmentInserting="(e) => AppointmentInserting(e)"
-             AppointmentInserted="async (e) => await AppointmentInserted(e)"
-             AppointmentRemoved="async (e) => await AppointmentRemoved(e)">
+             AppointmentUpdated="@AppointmentUpdated"
+             AppointmentInserting="@AppointmentInserting"
+             AppointmentInserted="@AppointmentInserted"
+             AppointmentRemoved="@AppointmentRemoved">
     <DxSchedulerDayView ShowWorkTimeOnly="true"></DxSchedulerDayView>
 </DxScheduler>
 
