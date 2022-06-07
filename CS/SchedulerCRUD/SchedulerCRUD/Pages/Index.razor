@@ -2,54 +2,86 @@
 @using SchedulerCRUD.Data
 @inject HttpClient Http
 
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@using System.Text
+
 <DxScheduler Id="schedulerWeekView"
              StartDate="@startDate"
-             DataStorage="@DataStorage" 
-             AppointmentUpdated="async (e) => await AppointmentUpdated(e)"
-             AppointmentInserting="(e) => AppointmentInserting(e)"
-             AppointmentInserted="async (e) => await AppointmentInserted(e)"
-             AppointmentRemoved="async (e) => await AppointmentRemoved(e)">
+             DataStorage="@DataStorage"
+             AppointmentUpdated="@AppointmentUpdated"
+             AppointmentInserting="@AppointmentInserting"
+             AppointmentInserted="@AppointmentInserted"
+             AppointmentRemoved="@AppointmentRemoved">
     <DxSchedulerDayView ShowWorkTimeOnly="true"></DxSchedulerDayView>
 </DxScheduler>
 
 @code {
-        protected DateTime startDate { get; set; } = new DateTime(2016, 10, 10);
-        DxSchedulerDataStorage DataStorage = new DxSchedulerDataStorage() {
+    protected DateTime startDate { get; set; } = new DateTime(2016, 10, 10);
+    DxSchedulerDataStorage DataStorage = new DxSchedulerDataStorage()
+        {
             AppointmentsSource = null,
-            AppointmentMappings = new DxSchedulerAppointmentMappings() {
-                Id = "Id",
-                Type = "EventType",
-                Start = "StartTime",
-                End = "EndTime",
-                Subject = "Subject",
-                AllDay = "AllDay",
-                Location = "Location",
-                Description = "Description",
-                LabelId = "Label",
-                StatusId = "Status",
-                RecurrenceInfo = "RecurrenceInfo"
+            AppointmentMappings = new DxSchedulerAppointmentMappings()
+            {
+                Id = "id",
+                Type = "eventType",
+                Start = "startTime",
+                End = "endTime",
+                Subject = "subject",
+                AllDay = "allDay",
+                Location = "location",
+                Description = "description",
+                LabelId = "label",
+                StatusId = "status",
             }
         };
-    protected override async Task OnInitializedAsync() {
-        DataStorage.AppointmentsSource = await Http.GetJsonAsync<List<MedicalAppointments>>("https://localhost:44383/api/MedicalAppointments"); // https://localhost:44383/ - link to the locally deployed DataSourceWebApi project
+
+    string fullWebAPIUrl = "https://localhost:44310/api/MedicalAppointments/";
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await Http.GetAsync(fullWebAPIUrl);
+
+        if (response.IsSuccessStatusCode)
+        {
+            using var responseStream = await response.Content.ReadAsStreamAsync();
+            DataStorage.AppointmentsSource = await JsonSerializer.DeserializeAsync<IEnumerable<MedicalAppointments>>(responseStream);
+        }
     }
-    void AppointmentInserting(SchedulerAppointmentOperationEventArgs e) {
+    void AppointmentInserting(SchedulerAppointmentOperationEventArgs e)
+    {
         e.Appointment.Id = -1;
     }
-    async Task AppointmentInserted (DxSchedulerAppointmentItem e) {
-        MedicalAppointments insertedItem = (DataStorage.AppointmentsSource as List<MedicalAppointments>).Where(m => m.Id == -1).FirstOrDefault();
-        insertedItem.Id = 0;
-        MedicalAppointments newItem = await Http.PostJsonAsync<MedicalAppointments>("https://localhost:44383/api/MedicalAppointments/", insertedItem);
-        insertedItem.Id = newItem.Id;
-        startDate = newItem.StartTime;
+
+    async Task<HttpResponseMessage> PostItemAsync(MedicalAppointments item) {
+        var myContent = JsonSerializer.Serialize(item);
+
+        var response = await Http.PostAsync(fullWebAPIUrl, new StringContent(myContent, Encoding.Unicode, "application/json"));
+        return response;
+    }
+
+    async Task AppointmentInserted(DxSchedulerAppointmentItem e)
+    {
+        MedicalAppointments insertedItem = (DataStorage.AppointmentsSource as List<MedicalAppointments>).Where(m => m.id == -1).FirstOrDefault();
+        insertedItem.id = 0;
+
+        HttpResponseMessage response = await PostItemAsync(insertedItem);
+        using var responseStream = await response.Content.ReadAsStreamAsync();
+        MedicalAppointments newItem = await JsonSerializer.DeserializeAsync<MedicalAppointments>(responseStream);
+        insertedItem.id = newItem.id;
+        startDate = newItem.startTime;
         DataStorage.RefreshData();
         StateHasChanged();
     }
-    async Task AppointmentUpdated (DxSchedulerAppointmentItem e) {
-        MedicalAppointments updatedItem = (DataStorage.AppointmentsSource as List<MedicalAppointments>).Where(m => m.Id == Convert.ToInt32(e.Id)).FirstOrDefault();
-        await Http.PutJsonAsync("https://localhost:44383/api/MedicalAppointments/" + Convert.ToInt32(e.Id), updatedItem);
+    async Task AppointmentUpdated(DxSchedulerAppointmentItem e)
+    {
+        MedicalAppointments updatedItem = (DataStorage.AppointmentsSource as List<MedicalAppointments>).Where(m => m.id == Convert.ToInt32(e.Id)).FirstOrDefault();
+        var myContent = JsonSerializer.Serialize(updatedItem);
+        var request = new HttpRequestMessage(HttpMethod.Put, fullWebAPIUrl + Convert.ToInt32(e.Id));
+        request.Content = new StringContent(myContent, Encoding.Unicode, "application/json");
+        var response = await Http.SendAsync(request);
     }
-    async Task AppointmentRemoved (DxSchedulerAppointmentItem e) {
-        await Http.DeleteAsync("https://localhost:44383/api/MedicalAppointments/" + e.Id);
+    async Task AppointmentRemoved(DxSchedulerAppointmentItem e)
+    {
+        await Http.DeleteAsync(fullWebAPIUrl + e.Id);
     }
 }
