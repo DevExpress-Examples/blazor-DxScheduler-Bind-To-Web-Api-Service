@@ -12,7 +12,8 @@ This example demonstrates how to implement CRUD operations in Blazor Scheduler. 
 This .NET Core project implements a Web API service with a connection to the **MedicsScheduling** database. The [DataBase folder](./CS/DataSourceWebApi/DataSourceWebApi/DataBase/) contains a script file that generates this database.
 
 2. **SchedulerCRUD project**
-This Blazor project illustrates how to use [AppointmentInserted](https://docs.devexpress.com/Blazor/DevExpress.Blazor.DxScheduler.AppointmentInserted), [AppointmentUpdated](https://docs.devexpress.com/Blazor/DevExpress.Blazor.Base.DxScheduler.AppointmentUpdated), and [AppointmentRemoved](https://docs.devexpress.com/Blazor/DevExpress.Blazor.Base.DxScheduler.AppointmentRemoved) events to implement CRUD operations in the [DxScheduler](https://docs.devexpress.com/Blazor/DevExpress.Blazor.DxScheduler). These events fire after the *AppointmentsSource* object was changed. You can use this object to update an assigned data source.
+This Blazor project illustrates how to use [AppointmentInserted](https://docs.devexpress.com/Blazor/DevExpress.Blazor.DxScheduler.AppointmentInserted), [AppointmentUpdated](https://docs.devexpress.com/Blazor/DevExpress.Blazor.Base.DxScheduler.AppointmentUpdated), and [AppointmentRemoved](https://docs.devexpress.com/Blazor/DevExpress.Blazor.Base.DxScheduler.AppointmentRemoved) events to implement CRUD operations in the [DxScheduler](https://docs.devexpress.com/Blazor/DevExpress.Blazor.DxScheduler). These events fire after the *AppointmentsSource* object is changed. You can use this object to update an assigned data source.
+
 
 ## Files to Review
 
