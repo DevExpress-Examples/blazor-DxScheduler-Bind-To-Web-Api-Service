@@ -9,9 +9,9 @@
 <DxScheduler Id="schedulerWeekView"
              StartDate="@startDate"
              DataStorage="@DataStorage"
-             AppointmentUpdated="@AppointmentUpdated"
-             AppointmentInserted="@AppointmentInserted"
-             AppointmentRemoved="@AppointmentRemoved">
+             AppointmentInserting="AppointmentInserting"
+             AppointmentRemoving="@AppointmentRemoving"
+             AppointmentUpdating="AppointmentUpdating">
     <DxSchedulerDayView ShowWorkTimeOnly="true"></DxSchedulerDayView>
 </DxScheduler>
 
@@ -54,27 +54,36 @@
         return response;
     }
 
-    async Task AppointmentInserted(DxSchedulerAppointmentItem e)
+    async Task AppointmentInserting(SchedulerAppointmentOperationEventArgs e)
     {
-        MedicalAppointments insertedItem = e.SourceObject as MedicalAppointments;
+        MedicalAppointments insertedItem = e.Appointment.SourceObject as MedicalAppointments;
         HttpResponseMessage response = await PostItemAsync(insertedItem);
-        using var responseStream = await response.Content.ReadAsStreamAsync();
-        MedicalAppointments newItem = await JsonSerializer.DeserializeAsync<MedicalAppointments>(responseStream);
-        insertedItem.id = newItem.id;
-        startDate = newItem.startTime;
-        DataStorage.RefreshData();
-        StateHasChanged();
+
+        if(response.IsSuccessStatusCode)
+        {
+            using var responseStream = await response.Content.ReadAsStreamAsync();
+            MedicalAppointments newItem = await JsonSerializer.DeserializeAsync<MedicalAppointments>(responseStream);
+            insertedItem.id = newItem.id;
+        }
+        else
+            e.Cancel = true;
     }
-    async Task AppointmentUpdated(DxSchedulerAppointmentItem e)
+    async Task AppointmentUpdating(SchedulerAppointmentOperationEventArgs e)
     {
-        MedicalAppointments updatedItem = e.SourceObject as MedicalAppointments;
+        MedicalAppointments updatedItem = e.Appointment.SourceObject as MedicalAppointments;
+        
         var myContent = JsonSerializer.Serialize(updatedItem);
-        var request = new HttpRequestMessage(HttpMethod.Put, fullWebAPIUrl + Convert.ToInt32(e.Id));
+        var request = new HttpRequestMessage(HttpMethod.Put, fullWebAPIUrl + Convert.ToInt32(updatedItem.id));
         request.Content = new StringContent(myContent, Encoding.Unicode, "application/json");
+
         var response = await Http.SendAsync(request);
+        if(response.IsSuccessStatusCode)
+            e.Cancel = true;
     }
-    async Task AppointmentRemoved(DxSchedulerAppointmentItem e)
+    async Task AppointmentRemoving(SchedulerAppointmentOperationEventArgs e)
     {
-        await Http.DeleteAsync(fullWebAPIUrl + e.Id);
+        var response = await Http.DeleteAsync(fullWebAPIUrl + e.Appointment.Id);
+        if (!response.IsSuccessStatusCode)
+            e.Cancel = true;
     }
 }
