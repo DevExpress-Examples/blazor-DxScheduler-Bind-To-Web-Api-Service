@@ -77,7 +77,7 @@
         request.Content = new StringContent(myContent, Encoding.Unicode, "application/json");
 
         var response = await Http.SendAsync(request);
-        if(response.IsSuccessStatusCode)
+        if(!response.IsSuccessStatusCode)
             e.Cancel = true;
     }
     async Task AppointmentRemoving(SchedulerAppointmentOperationEventArgs e)
