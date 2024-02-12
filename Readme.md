@@ -14,7 +14,7 @@ This example demonstrates how to implement CRUD operations in Blazor Scheduler. 
 
 * **SchedulerCRUD project**
 
-    This Blazor project illustrates how to use [AppointmentInserted](https://docs.devexpress.com/Blazor/DevExpress.Blazor.DxScheduler.AppointmentInserted), [AppointmentUpdated](https://docs.devexpress.com/Blazor/DevExpress.Blazor.Base.DxScheduler.AppointmentUpdated), and [AppointmentRemoved](https://docs.devexpress.com/Blazor/DevExpress.Blazor.Base.DxScheduler.AppointmentRemoved) events to implement CRUD operations in the [DxScheduler](https://docs.devexpress.com/Blazor/DevExpress.Blazor.DxScheduler). These events fire after the *AppointmentsSource* object is changed. You can use this object to update an assigned data source.
+    This Blazor project illustrates how to use [AppointmentInserting](https://docs.devexpress.com/Blazor/DevExpress.Blazor.DxScheduler.AppointmentInserting), [AppointmentUpdating](https://docs.devexpress.com/Blazor/DevExpress.Blazor.Base.DxScheduler.AppointmentUpdating), and [AppointmentRemoving](https://docs.devexpress.com/Blazor/DevExpress.Blazor.Base.DxScheduler.AppointmentRemoving) events to implement CRUD operations in the [DxScheduler](https://docs.devexpress.com/Blazor/DevExpress.Blazor.DxScheduler). These events fire after the *AppointmentsSource* object is changed. You can use this object to update an assigned data source.
 
 
 ## Files to Review
