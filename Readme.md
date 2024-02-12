@@ -28,4 +28,4 @@ This example demonstrates how to implement CRUD operations in Blazor Scheduler. 
 
 ## Documentation
 
-- [Manage Appointments](https://docs.devexpress.com/Blazor/DevExpress.Blazor.DxScheduler#manage-appointments)
+- [Manage Appointments in Code](https://docs.devexpress.com/Blazor/404770/components/scheduler/appointments#manage-appointments-in-code)
