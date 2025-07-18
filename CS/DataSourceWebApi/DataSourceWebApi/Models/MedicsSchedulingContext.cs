@@ -22,7 +22,7 @@ namespace DataSourceWebApi.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=(local);Database=MedicsScheduling;User ID=XXX;Password=XXX;");
+                optionsBuilder.UseSqlServer("Server=(local);Database=MedicsScheduling;Integrated Security=SSPI;persist security info=True;");
             }
         }
 
