@@ -11,7 +11,6 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddDevExpressBlazor();
-builder.Services.AddDevExpressBlazor(configure => configure.BootstrapVersion = BootstrapVersion.v5);
 
 builder.Services.AddHttpClient();
 // Server Side Blazor doesn't register HttpClient by default
@@ -42,3 +41,4 @@ app.MapFallbackToPage("/_Host");
 //});
 
 app.Run();
+
