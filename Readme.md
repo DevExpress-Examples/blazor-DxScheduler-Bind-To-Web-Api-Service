@@ -31,7 +31,7 @@ This example demonstrates how to implement CRUD operations in Blazor Scheduler. 
 
 - [Manage Appointments in Code](https://docs.devexpress.com/Blazor/404770/components/scheduler/appointments#manage-appointments-in-code)
 <!-- feedback -->
-## Does this example address your development requirements/objectives?
+## Does This Example Address Your Development Requirements/Objectives?
 
 [<img src="https://www.devexpress.com/support/examples/i/yes-button.svg"/>](https://www.devexpress.com/support/examples/survey.xml?utm_source=github&utm_campaign=blazor-scheduler-bind-to-web-api-service&~~~was_helpful=yes) [<img src="https://www.devexpress.com/support/examples/i/no-button.svg"/>](https://www.devexpress.com/support/examples/survey.xml?utm_source=github&utm_campaign=blazor-scheduler-bind-to-web-api-service&~~~was_helpful=no)
 
