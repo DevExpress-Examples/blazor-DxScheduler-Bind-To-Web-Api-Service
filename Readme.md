@@ -5,7 +5,7 @@
 [![](https://img.shields.io/badge/💬_Leave_Feedback-feecdd?style=flat-square)](#does-this-example-address-your-development-requirementsobjectives)
 <!-- default badges end -->
 
-### Scheduler for Blazor - How to implement CRUD operations with a Web API Service 
+# Scheduler for Blazor - How to implement CRUD operations with a Web API Service 
 
 This example demonstrates how to implement CRUD operations in Blazor Scheduler. The example contains two projects:
 
